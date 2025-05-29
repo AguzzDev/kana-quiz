@@ -105,7 +105,7 @@ export const Default = () => {
             mode={GameFiltersEnum.START_BUTTON}
             onClick={handleClick}
           >
-            Start test
+            Start Quiz
           </ButtonMenu>
         </div>
       </div>
