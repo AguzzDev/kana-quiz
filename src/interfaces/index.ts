@@ -1,10 +1,13 @@
-import { GameRepository } from "@/services/GameService";
+import { GameRepository } from "@/services/game/GameService";
 import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 
 export interface QuizInterface {
   romaji: string;
   kana: string;
+}
+export interface ErrorListInterface extends QuizInterface {
+  you: string;
 }
 export type AnswerType = Map<number, boolean>;
 export type InputsType = { el: HTMLInputElement | null; status: boolean }[];
@@ -13,31 +16,49 @@ export interface GameContextInterface {
   game: GameRepository | null;
   answers: AnswerType;
   inputs: InputsType;
-  selectMode: StartGameProps | null;
-  buttonClicked: ButtonClickedInterface | null;
+  selectMode: SelectModeInterface;
   updateCurrent: (i: number) => void;
   updateInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  updateButtonClicked: (args: UpdateButtonClickedProps) => void;
+  updateSelectMode: (args: UpdateSelectModeProps) => void;
   handleSubmit: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  startGame: (args?: StartGameProps) => void;
+  startGame: (args?: SelectModeInterface) => void;
   goHome: () => void;
   endGame: () => void;
 }
-export type ButtonClickedInterface = {
-  [key: string]: string;
+export interface GameRepositoryInterface {
+  quiz: QuizInterface[];
+  errorsList: ErrorListInterface[];
+  current: number;
+  errors: number;
+  valids: number;
+  answers: Map<number, boolean>;
+  options: {
+    mode: GameModeEnum;
+    type: GameTypeEnum;
+    kanaType: GameKanaTypeEnum;
+  };
+  inputs: { el: HTMLInputElement | null; status: boolean }[];
+  timer: string;
+  onEndGame?: () => void;
+}
+export type SelectModeInterface = {
+  mode: GameModeEnum | null;
+  type: GameTypeEnum | null;
+  kanaType: GameKanaTypeEnum | null;
 };
 
 export type PageStatesProps = NextPage<{
   updateState: Dispatch<SetStateAction<GameStatesEnum>>;
 }>;
 export interface StartGameProps {
+  mode?: GameModeEnum;
   type?: GameTypeEnum;
   kanaType?: GameKanaTypeEnum;
 }
-export type UpdateButtonClickedProps = {
+export type UpdateSelectModeProps = {
   mode: GameFiltersEnum;
   value: string;
-  selectModeValue: GameTypeEnum | GameKanaTypeEnum;
+  selectModeValue: GameTypeEnum | GameKanaTypeEnum | GameModeEnum;
 };
 
 export enum GameStatesEnum {
@@ -45,22 +66,28 @@ export enum GameStatesEnum {
   GAME = "GAME",
   RESULTS = "RESULTS",
 }
+export enum GameModeEnum {
+  CLASSIC = "Classic",
+  NO_ERRORS = "No errors",
+  TIMED = "With time (5min)",
+}
 export enum GameTypeEnum {
-  ALL = "ALL",
-  KATAKANA = "KATAKANA",
-  HIRAGANA = "HIRAGANA",
+  ALL = "All syllabaries",
+  KATAKANA = "Katakana",
+  HIRAGANA = "Hiragana",
 }
 export enum GameKanaTypeEnum {
-  ALL = "ALL",
-  MAIN = "MAIN",
-  DAKUTEN = "DAKUTEN",
-  YOUON = "YOUON",
+  ALL = "All groups",
+  MAIN = "Main",
+  DAKUTEN = "Dakuten",
+  YOUON = "Combinations",
 }
 export enum GameSumTypeEnum {
   VALID = "VALID",
   ERROR = "ERROR",
 }
 export enum GameFiltersEnum {
+  MODE = "mode",
   TYPE = "type",
   KANATYPE = "kanaType",
   START_BUTTON = "startButton",

@@ -3,6 +3,9 @@ import {
   GameSumTypeEnum,
   QuizInterface,
   GameKanaTypeEnum,
+  GameModeEnum,
+  GameRepositoryInterface,
+  ErrorListInterface,
 } from "@/interfaces";
 import {
   hiraganaMainKanaData,
@@ -12,33 +15,9 @@ import {
   katakanaDakutenKanaData,
   katakanaYouonKanaData,
 } from "@/lib/data";
+import { TimerRepository } from "../timer/TimerService";
 
-export class TimerRepository {
-  time: number = 0;
-  private intervalId: number | null = null;
-
-  start() {
-    if (this.intervalId !== null) return;
-    this.intervalId = window.setInterval(() => {
-      this.time++;
-    }, 1000);
-  }
-
-  stop() {
-    if (this.intervalId !== null) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
-  }
-
-  getTime() {
-    return this.time > 60
-      ? `${(this.time / 60).toFixed(2)} minutes`
-      : `${this.time} seconds`;
-  }
-}
-
-class GameModeFactory {
+class GameModeSylAndGroupFactory {
   static create(type: GameTypeEnum, kanaType: GameKanaTypeEnum) {
     const allHiragana = [
       ...hiraganaMainKanaData,
@@ -88,21 +67,55 @@ class GameModeFactory {
   }
 }
 
-export class GameRepository {
+export class GameModeFactory {
+  static create(
+    mode: GameModeEnum,
+    type: GameTypeEnum,
+    kanaType: GameKanaTypeEnum
+  ): GameRepository {
+    switch (mode) {
+      case GameModeEnum.NO_ERRORS:
+        return new NoErrorsModeRepository(mode, type, kanaType);
+      case GameModeEnum.TIMED:
+        return new TimedModeRepository(mode, type, kanaType);
+      default:
+        return new GameRepository(mode, type, kanaType);
+    }
+  }
+}
+
+export class GameRepository implements GameRepositoryInterface {
   quiz: QuizInterface[];
+  errorsList: ErrorListInterface[];
   current: number;
   errors: number;
   valids: number;
   answers: Map<number, boolean>;
+  options: {
+    mode: GameModeEnum;
+    type: GameTypeEnum;
+    kanaType: GameKanaTypeEnum;
+  };
   inputs: { el: HTMLInputElement | null; status: boolean }[];
   private internalTimer: TimerRepository;
   timer: string;
+  onEndGame?: () => void;
 
-  constructor(type: GameTypeEnum, kanaType: GameKanaTypeEnum) {
-    const raw = GameModeFactory.create(type, kanaType);
+  constructor(
+    mode: GameModeEnum,
+    type: GameTypeEnum,
+    kanaType: GameKanaTypeEnum
+  ) {
+    const raw = GameModeSylAndGroupFactory.create(type, kanaType);
     const timer = new TimerRepository();
     timer.start();
 
+    this.errorsList = [];
+    this.options = {
+      mode,
+      type,
+      kanaType,
+    };
     this.quiz = this.shuffle(raw);
     this.current = 0;
     this.errors = 0;
@@ -116,6 +129,7 @@ export class GameRepository {
   endGame() {
     this.internalTimer.stop();
     this.timer = this.internalTimer.getTime();
+    this.onEndGameEvent();
   }
 
   private shuffle(array: QuizInterface[]) {
@@ -132,7 +146,18 @@ export class GameRepository {
 
   checkAnswer(input: string) {
     const quiz = this.quiz[this.current];
-    return quiz.romaji == input.toLowerCase();
+    const response = quiz.romaji == input.toLowerCase();
+
+    if (!response) {
+      this.errorsList.push({ ...quiz, you: input.toLowerCase() });
+    }
+    this.updateInputs(response);
+    this.updateAnswers(response);
+    this.updateValidsOrErrors(
+      response ? GameSumTypeEnum.VALID : GameSumTypeEnum.ERROR
+    );
+
+    return response;
   }
 
   updateCurrent(number: number) {
@@ -176,5 +201,66 @@ export class GameRepository {
 
   isThisElementValid() {
     return this.answers.get(this.current);
+  }
+
+  move() {
+    const checkFinish = this.checkFinish();
+    if (checkFinish) {
+      this.endGame();
+      return;
+    }
+
+    let to = this.current + 1;
+    const lastElement = to === this.quiz.length;
+    const inputStatus = this.checkIfNextElementIsValid();
+
+    if (inputStatus || lastElement) {
+      const findFirstNotCompleted = this.findFirstInputError();
+      to = findFirstNotCompleted;
+    }
+
+    this.updateCurrent(to);
+    return to;
+  }
+
+  protected onEndGameEvent() {
+    if (this.onEndGame) {
+      this.onEndGame();
+    }
+  }
+}
+
+class NoErrorsModeRepository extends GameRepository {
+  override checkAnswer(input: string): boolean {
+    const correct = super.checkAnswer(input);
+    if (!correct) {
+      this.endGame();
+    }
+    return correct;
+  }
+}
+
+class TimedModeRepository extends GameRepository {
+  private timerId?: number;
+
+  constructor(
+    mode: GameModeEnum,
+    type: GameTypeEnum,
+    kanaType: GameKanaTypeEnum
+  ) {
+    super(mode, type, kanaType);
+
+    this.timerId = window.setTimeout(() => {
+      this.endGame();
+    }, 5 * 60 * 1000);
+  }
+
+  override endGame() {
+    super.endGame();
+
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = undefined;
+    }
   }
 }

@@ -1,7 +1,4 @@
-import { ReactNode } from "react";
-
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
   customActive?: boolean;
   activeValue?: boolean;
 }

@@ -2,6 +2,7 @@
 
 import { useGame } from "@/context/GameContext";
 import { ButtonOne } from "../ui/button/ButtonOne";
+import { QuizInterface } from "@/interfaces";
 
 export const Game = () => {
   const {
@@ -16,9 +17,15 @@ export const Game = () => {
 
   const quiz = game!.getQuiz();
   return (
-    <div className="flex flex-col space-y-3">
+    <>
+      {game?.options && (
+        <h4 className="text-center py-2">
+          {game?.options.mode} & {game?.options.type} & {game?.options.kanaType}
+        </h4>
+      )}
+
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-6">
-        {quiz.map((d, i) => (
+        {quiz.map((d: QuizInterface, i: number) => (
           <div
             key={i}
             className={`${
@@ -31,7 +38,9 @@ export const Game = () => {
           >
             <p className="py-2 text-2xl">{d.kana}</p>
 
-            {answers.get(i) ? null : (
+            {answers.get(i) ? (
+              <p className="h-10"></p>
+            ) : (
               <input
                 ref={(el) => {
                   const prev = inputs[i];
@@ -55,8 +64,8 @@ export const Game = () => {
       </div>
 
       <div className="w-full sm:w-2/4 mx-auto my-4">
-        <ButtonOne onClick={endGame}>Finish Quiz</ButtonOne>
+        <ButtonOne onClick={() => endGame()}>Finish Quiz</ButtonOne>
       </div>
-    </div>
+    </>
   );
 };

@@ -1,71 +1,55 @@
 "use client";
 import {
   GameStatesEnum,
-  GameSumTypeEnum,
   GameContextInterface,
-  StartGameProps,
-  UpdateButtonClickedProps,
-  GameFiltersEnum,
+  GameModeEnum,
   GameTypeEnum,
   GameKanaTypeEnum,
+  UpdateSelectModeProps,
+  SelectModeInterface,
 } from "@/interfaces";
-import { GameRepository } from "@/services/GameService";
-import { createContext, useContext, useRef, useState } from "react";
+import { GameModeFactory } from "@/services/game/GameService";
+import { sleep } from "@/utils/sleep";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 export const GameContext = createContext<GameContextInterface | null>(null);
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const [buttonClicked, setButtonClicked] =
-    useState<GameContextInterface["buttonClicked"]>(null);
   const [input, setInput] = useState<string>("");
   const [game, setGame] = useState<GameContextInterface["game"]>(null);
   const [state, setState] = useState<GameContextInterface["state"]>(
     GameStatesEnum.DEFAULT
   );
-  const [selectMode, setSelectMode] =
-    useState<GameContextInterface["selectMode"]>(null);
-  const [, forceRender] = useState(0);
+  const [selectMode, setSelectMode] = useState<
+    GameContextInterface["selectMode"]
+  >({ mode: GameModeEnum.CLASSIC, type: null, kanaType: null });
   const inputsRef = useRef<GameContextInterface["inputs"]>([]);
   const answersRef = useRef<GameContextInterface["answers"]>(new Map());
 
-  const forceReRender = () => {
-    forceRender((x) => x + 1);
-  };
-
   const goHome = () => {
     setState(GameStatesEnum.DEFAULT);
-    setButtonClicked(null);
-    setSelectMode(null);
+    setSelectMode({ mode: GameModeEnum.CLASSIC, type: null, kanaType: null });
   };
 
-  const updateButtonClicked = ({
+  const updateSelectMode = ({
     mode,
     value,
     selectModeValue,
-  }: UpdateButtonClickedProps) => {
-    setButtonClicked((prev) => ({ ...prev, [mode]: value }));
+  }: UpdateSelectModeProps) => {
+    setSelectMode((prev) => ({ ...prev, [mode]: value }));
     if (!selectModeValue) return;
-
-    setSelectMode((prev) => {
-      if (mode === GameFiltersEnum.TYPE) {
-        return {
-          ...prev,
-          type: selectModeValue as GameTypeEnum,
-        };
-      } else {
-        return {
-          ...prev,
-          kanaType: selectModeValue as GameKanaTypeEnum,
-        };
-      }
-    });
   };
 
-  const startGame = (args?: StartGameProps) => {
+  const startGame = (args?: SelectModeInterface) => {
+    const modeValues = args?.mode ?? selectMode!.mode;
     const typeValues = args?.type ?? selectMode!.type!;
     const kanaTypeValues = args?.kanaType ?? selectMode!.kanaType!;
 
-    const game = new GameRepository(typeValues, kanaTypeValues);
+    const game = GameModeFactory.create(
+      modeValues as GameModeEnum,
+      typeValues as GameTypeEnum,
+      kanaTypeValues as GameKanaTypeEnum
+    );
     setGame(game);
 
     inputsRef.current = game.inputs;
@@ -74,61 +58,39 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setState(GameStatesEnum.GAME);
   };
 
-  const endGame = async () => {
+  const endGame = async (auto = false) => {
+    if (!auto) game!.endGame();
+
+    await sleep(2000);
     setState(GameStatesEnum.RESULTS);
-    game!.endGame();
   };
 
   const move = () => {
     if (!game) return;
-
-    const checkFinish = game.checkFinish();
-    if (checkFinish) return endGame();
-
-    const to = game.current + 1;
-    const lastElement = to === game.quiz.length;
-    const inputStatus = game.checkIfNextElementIsValid();
-
-    if (inputStatus || lastElement) {
-      const findFirstNotCompleted = game.findFirstInputError();
-      game.updateCurrent(findFirstNotCompleted);
-      inputsRef.current[findFirstNotCompleted].el?.focus();
-      return;
-    }
-
-    game.updateCurrent(to);
-    inputsRef.current[to].el!.focus();
+    const moveTo = game!.move();
+    if (moveTo === undefined) return;
+    inputsRef.current[moveTo].el!.focus();
   };
 
   const submitAnswer = () => {
     if (!game) return;
-    const answer = game.checkAnswer(input);
-    game.updateInputs(answer);
-    game.updateAnswers(answer);
-
-    if (!answer) {
-      game.updateValidsOrErrors(GameSumTypeEnum.ERROR);
-    } else {
-      game.updateValidsOrErrors(GameSumTypeEnum.VALID);
-    }
+    game.checkAnswer(input);
   };
 
   const handleSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== "Enter" || !game) return;
+    if (e.key !== "Enter" || !game || input.length === 0) return;
     e.preventDefault();
     const isValid = game.isThisElementValid();
     if (isValid) return move();
 
-    submitAnswer();
     clearInput();
+    submitAnswer();
     move();
-    forceReRender();
   };
 
   const updateCurrent = (i: number) => {
-    game!.updateCurrent(i);
-    forceReRender();
     clearInput();
+    game!.updateCurrent(i);
   };
 
   const updateInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,8 +98,17 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const clearInput = () => {
+    inputsRef.current[game!.current].el!.value = "";
     setInput("");
   };
+
+  useEffect(() => {
+    if (!game) return;
+
+    game.onEndGame = () => {
+      endGame(true);
+    };
+  }, [game]);
 
   return (
     <GameContext.Provider
@@ -147,10 +118,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         inputs: inputsRef.current,
         answers: answersRef.current,
         selectMode,
-        buttonClicked,
         updateCurrent,
         updateInput,
-        updateButtonClicked,
+        updateSelectMode,
         handleSubmit,
         startGame,
         endGame,

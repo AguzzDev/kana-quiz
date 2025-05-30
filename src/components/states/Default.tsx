@@ -1,6 +1,11 @@
 "use client";
 import { useGame } from "@/context/GameContext";
-import { GameFiltersEnum, GameKanaTypeEnum, GameTypeEnum } from "@/interfaces";
+import {
+  GameFiltersEnum,
+  GameKanaTypeEnum,
+  GameModeEnum,
+  GameTypeEnum,
+} from "@/interfaces";
 import { sleep } from "@/utils/sleep";
 import { useState } from "react";
 import { ButtonMenu } from "../ui/button/ButtonMenu";
@@ -26,7 +31,7 @@ export const Default = () => {
       return newError("Select a syllabary");
     }
 
-    startGame(selectMode!);
+    startGame(selectMode);
   };
 
   const Button = ({
@@ -36,18 +41,37 @@ export const Default = () => {
   }: {
     mode: GameFiltersEnum;
     title: string;
-    value: GameTypeEnum | GameKanaTypeEnum;
+    value: GameTypeEnum | GameKanaTypeEnum | GameModeEnum;
   }) => (
-    <ButtonMenu mode={mode} title={title} value={value}>
+    <ButtonMenu mode={mode} value={value}>
       {title}
     </ButtonMenu>
   );
 
   return (
     <>
-      <div className="flex flex-1 flex-col justify-center space-y-5">
+      <div className="flex flex-1 flex-col justify-center space-y-3 sm:space-y-5">
+        <h3>Game Modes</h3>
+        <div className="grid grid-cols-3 gap-x-2 sm:gap-x-5">
+          <Button
+            mode={GameFiltersEnum.MODE}
+            title="Classic"
+            value={GameModeEnum.CLASSIC}
+          />
+          <Button
+            mode={GameFiltersEnum.MODE}
+            title="No errors"
+            value={GameModeEnum.NO_ERRORS}
+          />
+          <Button
+            mode={GameFiltersEnum.MODE}
+            title="With time (5min)"
+            value={GameModeEnum.TIMED}
+          />
+        </div>
+
         <h3>Which syllabary do you want to practice?</h3>
-        <div className="flex-col space-y-5 sm:grid grid-cols-2 gap-x-10 text-center">
+        <div className="flex-col space-y-3 sm:space-y-5 sm:grid grid-cols-2 gap-x-10 text-center">
           <Button
             mode={GameFiltersEnum.TYPE}
             title="Practice Hiragana"
@@ -69,7 +93,7 @@ export const Default = () => {
         </div>
 
         <h3>Which group do you want to practice?</h3>
-        <div className="flex-col space-y-5 sm:grid grid-cols-3 gap-x-10 text-center">
+        <div className="flex-col space-y-3 sm:space-y-5 sm:grid grid-cols-3 gap-x-10 text-center">
           <Button
             mode={GameFiltersEnum.KANATYPE}
             title="All Main Kana"
@@ -94,19 +118,19 @@ export const Default = () => {
             />
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col flex-1">
-        {err && <p className="text-sm text-red-800 pt-2">{err}</p>}
+        <div className="flex flex-col flex-1">
+          {err && <p className="text-sm text-red-800 pt-2">{err}</p>}
 
-        <div className="flex-1 flex flex-col justify-end">
-          <ButtonMenu
-            className="py-4"
-            mode={GameFiltersEnum.START_BUTTON}
-            onClick={handleClick}
-          >
-            Start Quiz
-          </ButtonMenu>
+          <div className="flex-1 flex flex-col justify-end">
+            <ButtonMenu
+              className="py-4"
+              mode={GameFiltersEnum.START_BUTTON}
+              onClick={handleClick}
+            >
+              Start Quiz
+            </ButtonMenu>
+          </div>
         </div>
       </div>
     </>
