@@ -9,7 +9,6 @@ import {
   SelectModeInterface,
 } from "@/interfaces";
 import { GameModeFactory } from "@/services/game/GameService";
-import { sleep } from "@/utils/sleep";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 export const GameContext = createContext<GameContextInterface | null>(null);
