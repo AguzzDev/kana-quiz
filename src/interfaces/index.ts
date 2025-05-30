@@ -1,4 +1,5 @@
 import { GameRepository } from "@/services/game/GameService";
+import { TimerRepository } from "@/services/timer/TimerService";
 import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 
@@ -38,8 +39,8 @@ export interface GameRepositoryInterface {
     kanaType: GameKanaTypeEnum;
   };
   inputs: { el: HTMLInputElement | null; status: boolean }[];
-  timer: string;
-  onEndGame?: () => void;
+  timer: TimerRepository;
+  onEndGameEvent?: () => void;
 }
 export type SelectModeInterface = {
   mode: GameModeEnum | null;

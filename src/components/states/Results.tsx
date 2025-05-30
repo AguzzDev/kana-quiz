@@ -7,6 +7,7 @@ import { ErrorListInterface } from "@/interfaces";
 
 export const Results = () => {
   const { game, startGame, goHome } = useGame();
+
   return (
     <>
       <h2>Results</h2>
@@ -20,7 +21,7 @@ export const Results = () => {
           Overall Correct: {game!.valids}/{game!.quiz.length}{" "}
           {getPercentage(game!.valids, game!.quiz.length)}
         </p>
-        <p>Time: {game!.timer}</p>
+        <p>Time: {game!.timer.time}</p>
         <p>Errors: {game!.errors}</p>
 
         <div className="flex items-center space-x-10 mt-2">

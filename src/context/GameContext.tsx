@@ -61,7 +61,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const endGame = async (auto = false) => {
     if (!auto) game!.endGame();
 
-    await sleep(2000);
     setState(GameStatesEnum.RESULTS);
   };
 
@@ -105,7 +104,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!game) return;
 
-    game.onEndGame = () => {
+    game.onEndGameEvent = () => {
       endGame(true);
     };
   }, [game]);

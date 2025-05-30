@@ -97,9 +97,8 @@ export class GameRepository implements GameRepositoryInterface {
     kanaType: GameKanaTypeEnum;
   };
   inputs: { el: HTMLInputElement | null; status: boolean }[];
-  private internalTimer: TimerRepository;
-  timer: string;
-  onEndGame?: () => void;
+  timer: TimerRepository;
+  onEndGameEvent?: () => void;
 
   constructor(
     mode: GameModeEnum,
@@ -122,14 +121,13 @@ export class GameRepository implements GameRepositoryInterface {
     this.valids = 0;
     this.answers = new Map<number, boolean>();
     this.inputs = [];
-    this.internalTimer = timer;
-    this.timer = this.internalTimer.getTime();
+    this.timer = timer;
   }
 
   endGame() {
-    this.internalTimer.stop();
-    this.timer = this.internalTimer.getTime();
-    this.onEndGameEvent();
+    this.timer.stop();
+    this.timer.getTime();
+    this.onEndGame();
   }
 
   private shuffle(array: QuizInterface[]) {
@@ -223,9 +221,9 @@ export class GameRepository implements GameRepositoryInterface {
     return to;
   }
 
-  protected onEndGameEvent() {
-    if (this.onEndGame) {
-      this.onEndGame();
+  protected onEndGame() {
+    if (this.onEndGameEvent) {
+      this.onEndGameEvent();
     }
   }
 }

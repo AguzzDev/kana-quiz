@@ -1,11 +1,18 @@
 export class TimerRepository {
-  time: number = 0;
-  private intervalId: number | null = null;
+  internalTimer: number = 0;
+  time: string = "";
+  intervalId: number | null = null;
+  onGetTimerEvent?: () => void;
+
+  constructor() {
+    this.onGetTimerEvent = () => {};
+  }
 
   start() {
     if (this.intervalId !== null) return;
     this.intervalId = window.setInterval(() => {
-      this.time++;
+      this.internalTimer++;
+      this.onGetTimer();
     }, 1000);
   }
 
@@ -17,8 +24,18 @@ export class TimerRepository {
   }
 
   getTime() {
-    return this.time > 60
-      ? `${(this.time / 60).toFixed(2)} minutes`
-      : `${this.time} seconds`;
+    const minutes = String(Math.floor(this.internalTimer / 60)).padStart(
+      2,
+      "0"
+    );
+    const seconds = String(this.internalTimer % 60).padStart(2, "0");
+    this.time = `${minutes}:${seconds}`;
+  }
+
+  protected onGetTimer() {
+    if (this.onGetTimerEvent) {
+      this.getTime();
+      this.onGetTimerEvent();
+    }
   }
 }

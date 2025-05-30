@@ -18,12 +18,6 @@ export const Game = () => {
   const quiz = game!.getQuiz();
   return (
     <>
-      {game?.options && (
-        <h4 className="text-center py-2">
-          {game?.options.mode} & {game?.options.type} & {game?.options.kanaType}
-        </h4>
-      )}
-
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-6">
         {quiz.map((d: QuizInterface, i: number) => (
           <div
