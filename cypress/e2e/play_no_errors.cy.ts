@@ -13,10 +13,7 @@ describe("play no errors mode", () => {
     katakanaDakutenKanaData.forEach((d) => {
       cy.focused().type(`${d.romaji}{enter}`);
     });
-    cy.get("[data-id='overall-correct']").should(
-      "contain",
-      "25/25 (100.00%)"
-    );
+    cy.get("[data-id='overall-correct']").should("contain", "25/25 (100.00%)");
   });
 
   it("valid and error", () => {
@@ -29,10 +26,7 @@ describe("play no errors mode", () => {
       i++;
     }
 
-    cy.get("[data-id='overall-correct']").should(
-      "contain",
-      "1/25 (4.00%)"
-    );
+    cy.get("[data-id='overall-correct']").should("contain", "1/25 (4.00%)");
     cy.get("[data-id='errors']").should("contain", "1");
   });
 
@@ -58,14 +52,11 @@ describe("play no errors mode", () => {
 
     attempt();
 
-    cy.get("[data-id='overall-correct']").should(
-      "contain",
-      "1/25 (4.00%)"
-    );
+    cy.get("[data-id='overall-correct']").should("contain", "1/25 (4.00%)");
     cy.get("[data-id='errors']").should("contain", "1");
   });
 
-  it.only("randomly positions", () => {
+  it("randomly positions", () => {
     let i = 0;
     let tryTrues = 0;
     const positions = [2, 5, 7, 10];
@@ -92,10 +83,7 @@ describe("play no errors mode", () => {
 
     attempt();
 
-    cy.get("[data-id='overall-correct']").should(
-      "contain",
-      "2/25 (8.00%)"
-    );
+    cy.get("[data-id='overall-correct']").should("contain", "2/25 (8.00%)");
     cy.get("[data-id='errors']").should("contain", "1");
   });
 });

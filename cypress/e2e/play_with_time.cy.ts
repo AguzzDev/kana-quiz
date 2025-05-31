@@ -25,7 +25,7 @@ describe("play with time mode", () => {
     cy.get("[data-id='errors']").should("contain", "0");
   });
 
-  it.only("wait 30s on the 5th try and the game ends", () => {
+  it("wait 30s on the 5th try and the game ends", () => {
     let i = 0;
 
     const attempt = () => {
@@ -49,10 +49,7 @@ describe("play with time mode", () => {
     };
 
     attempt();
-    cy.get("[data-id='overall-correct']").should(
-      "contain",
-      "5/72 (6.94%)"
-    );
+    cy.get("[data-id='overall-correct']").should("contain", "5/72 (6.94%)");
     cy.get("[data-id='time']").should("contain", "00:30");
   });
 });

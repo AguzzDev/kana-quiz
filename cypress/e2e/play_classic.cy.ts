@@ -72,7 +72,7 @@ describe("play classic mode", () => {
     cy.get("[data-id='overall-correct']").should("contain", "1/46 (2.17%)");
   });
 
-  it.only("check goHome button", () => {
+  it("check goHome button", () => {
     cy.get("button").click();
     cy.get("[data-id='button-go-home']").click();
     cy.get("[data-id='default-view']").should("exist");
