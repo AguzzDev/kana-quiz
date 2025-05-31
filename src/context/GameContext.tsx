@@ -120,7 +120,6 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     if (!game) return;
 
     game.onEndGameEvent = () => {
-      console.log("hola");
       endGame(true);
     };
   }, [game]);
