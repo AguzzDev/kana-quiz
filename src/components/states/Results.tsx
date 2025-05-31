@@ -13,16 +13,16 @@ export const Results = () => {
       <h2>Results</h2>
 
       <div>
-        <p>
+        <p data-id="game-mode">
           Game mode: {game?.options.mode} & {game?.options.type} &{" "}
           {game?.options.kanaType}
         </p>
-        <p>
+        <p data-id="overall-correct">
           Overall Correct: {game!.valids}/{game!.quiz.length}{" "}
           {getPercentage(game!.valids, game!.quiz.length)}
         </p>
-        <p>Time: {game!.timer.time}</p>
-        <p>Errors: {game!.errors}</p>
+        <p data-id="time">Time: {game!.timer.time}</p>
+        <p data-id="errors">Errors: {game!.errors}</p>
 
         <div className="flex items-center space-x-10 mt-2">
           {game!.errorsList!.map((d: ErrorListInterface, i: number) => (
@@ -36,8 +36,12 @@ export const Results = () => {
       </div>
 
       <div className="flex flex-col justify-end flex-1 space-y-3">
-        <ButtonOne onClick={() => startGame()}>Play again</ButtonOne>
-        <ButtonOne onClick={goHome}>Back to home</ButtonOne>
+        <ButtonOne data-id="button-play-again" onClick={() => startGame()}>
+          Play again
+        </ButtonOne>
+        <ButtonOne data-id="button-go-home" onClick={goHome}>
+          Back to home
+        </ButtonOne>
       </div>
     </>
   );

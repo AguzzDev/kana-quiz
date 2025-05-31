@@ -10,6 +10,12 @@ import { sleep } from "@/utils/sleep";
 import { useState } from "react";
 import { ButtonMenu } from "../ui/button/ButtonMenu";
 
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  mode: GameFiltersEnum;
+  title: string;
+  value: GameTypeEnum | GameKanaTypeEnum | GameModeEnum;
+}
+
 export const Default = () => {
   const [err, setErr] = useState<string | null>(null);
 
@@ -34,39 +40,34 @@ export const Default = () => {
     startGame(selectMode);
   };
 
-  const Button = ({
-    mode,
-    title,
-    value,
-  }: {
-    mode: GameFiltersEnum;
-    title: string;
-    value: GameTypeEnum | GameKanaTypeEnum | GameModeEnum;
-  }) => (
-    <ButtonMenu mode={mode} value={value}>
+  const Button = ({ mode, title, value, ...props }: ButtonProps) => (
+    <ButtonMenu mode={mode} value={value} {...props}>
       {title}
     </ButtonMenu>
   );
 
   return (
     <>
-      <div className="flex flex-1 flex-col justify-center space-y-3 sm:space-y-5">
+      <div data-id="default-view" className="flex flex-1 flex-col justify-center space-y-3 sm:space-y-5">
         <h3>Game Modes</h3>
         <div className="grid grid-cols-3 gap-x-2 sm:gap-x-5">
           <Button
             mode={GameFiltersEnum.MODE}
             title="Classic"
             value={GameModeEnum.CLASSIC}
+            data-id="button-mode-1"
           />
           <Button
             mode={GameFiltersEnum.MODE}
             title="No errors"
             value={GameModeEnum.NO_ERRORS}
+            data-id="button-mode-2"
           />
           <Button
             mode={GameFiltersEnum.MODE}
             title="With time (5min)"
             value={GameModeEnum.TIMED}
+            data-id="button-mode-3"
           />
         </div>
 
@@ -76,11 +77,13 @@ export const Default = () => {
             mode={GameFiltersEnum.TYPE}
             title="Practice Hiragana"
             value={GameTypeEnum.HIRAGANA}
+            data-id="button-type-1"
           />
           <Button
             mode={GameFiltersEnum.TYPE}
             title="Practice Katakana"
             value={GameTypeEnum.KATAKANA}
+            data-id="button-type-2"
           />
 
           <div className="col-span-2">
@@ -88,6 +91,7 @@ export const Default = () => {
               mode={GameFiltersEnum.TYPE}
               title="Practice All"
               value={GameTypeEnum.ALL}
+              data-id="button-type-3"
             />
           </div>
         </div>
@@ -98,16 +102,19 @@ export const Default = () => {
             mode={GameFiltersEnum.KANATYPE}
             title="All Main Kana"
             value={GameKanaTypeEnum.MAIN}
+            data-id="button-kanaType-1"
           />
           <Button
             mode={GameFiltersEnum.KANATYPE}
             title="All Dakuten Kana"
             value={GameKanaTypeEnum.DAKUTEN}
+            data-id="button-kanaType-2"
           />
           <Button
             mode={GameFiltersEnum.KANATYPE}
             title="All Combination Kana"
             value={GameKanaTypeEnum.YOUON}
+            data-id="button-kanaType-3"
           />
 
           <div className="col-span-3">
@@ -115,6 +122,7 @@ export const Default = () => {
               mode={GameFiltersEnum.KANATYPE}
               title="All Kana"
               value={GameKanaTypeEnum.ALL}
+              data-id="button-kanaType-4"
             />
           </div>
         </div>
@@ -127,6 +135,7 @@ export const Default = () => {
               className="py-4"
               mode={GameFiltersEnum.START_BUTTON}
               onClick={handleClick}
+              data-id="button-start"
             >
               Start Quiz
             </ButtonMenu>

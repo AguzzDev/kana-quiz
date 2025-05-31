@@ -9,6 +9,7 @@ import {
   SelectModeInterface,
 } from "@/interfaces";
 import { GameModeFactory } from "@/services/game/GameService";
+import { TestGameModeFactory } from "@/services/game/TestGameService";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 export const GameContext = createContext<GameContextInterface | null>(null);
@@ -43,13 +44,25 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     const modeValues = args?.mode ?? selectMode!.mode;
     const typeValues = args?.type ?? selectMode!.type!;
     const kanaTypeValues = args?.kanaType ?? selectMode!.kanaType!;
+    const isTest =
+      typeof window !== "undefined" && (window as Window).CYPRESS_TEST;
 
-    const game = GameModeFactory.create(
-      modeValues as GameModeEnum,
-      typeValues as GameTypeEnum,
-      kanaTypeValues as GameKanaTypeEnum
-    );
+    const game = isTest
+      ? TestGameModeFactory.create(
+          modeValues as GameModeEnum,
+          typeValues as GameTypeEnum,
+          kanaTypeValues as GameKanaTypeEnum
+        )
+      : GameModeFactory.create(
+          modeValues as GameModeEnum,
+          typeValues as GameTypeEnum,
+          kanaTypeValues as GameKanaTypeEnum
+        );
     setGame(game);
+
+    if (isTest) {
+      window.game = game;
+    }
 
     inputsRef.current = game.inputs;
     answersRef.current = game.answers;
@@ -96,7 +109,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const clearInput = () => {
-    inputsRef.current[game!.current].el!.value = "";
+    if (inputsRef.current[game!.current].el!.value) {
+      inputsRef.current[game!.current].el!.value = "";
+    }
+
     setInput("");
   };
 
@@ -104,6 +120,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     if (!game) return;
 
     game.onEndGameEvent = () => {
+      console.log("hola");
       endGame(true);
     };
   }, [game]);

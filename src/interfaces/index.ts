@@ -3,6 +3,13 @@ import { TimerRepository } from "@/services/timer/TimerService";
 import { NextPage } from "next";
 import { Dispatch, SetStateAction } from "react";
 
+declare global {
+  interface Window {
+    CYPRESS_TEST?: boolean;
+    game: GameRepository
+  }
+}
+
 export interface QuizInterface {
   romaji: string;
   kana: string;

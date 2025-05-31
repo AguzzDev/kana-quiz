@@ -14,22 +14,14 @@ import {
   katakanaMainKanaData,
   katakanaDakutenKanaData,
   katakanaYouonKanaData,
+  allHiraganaData,
+  allKatakanaData,
+  allKanasData,
 } from "@/lib/data";
 import { TimerRepository } from "../timer/TimerService";
 
 class GameModeSylAndGroupFactory {
   static create(type: GameTypeEnum, kanaType: GameKanaTypeEnum) {
-    const allHiragana = [
-      ...hiraganaMainKanaData,
-      ...hiraganaDakutenKanaData,
-      ...hiraganaYouonKanaData,
-    ];
-    const allKatakana = [
-      ...katakanaMainKanaData,
-      ...katakanaDakutenKanaData,
-      ...katakanaYouonKanaData,
-    ];
-
     switch (type) {
       case GameTypeEnum.HIRAGANA:
         if (kanaType === GameKanaTypeEnum.MAIN) {
@@ -39,7 +31,7 @@ class GameModeSylAndGroupFactory {
         } else if (kanaType === GameKanaTypeEnum.YOUON) {
           return hiraganaYouonKanaData;
         } else {
-          return allHiragana;
+          return allHiraganaData;
         }
       case GameTypeEnum.KATAKANA:
         if (kanaType === GameKanaTypeEnum.MAIN) {
@@ -49,7 +41,7 @@ class GameModeSylAndGroupFactory {
         } else if (kanaType === GameKanaTypeEnum.YOUON) {
           return katakanaYouonKanaData;
         } else {
-          return allKatakana;
+          return allKatakanaData;
         }
       case GameTypeEnum.ALL:
         if (kanaType === GameKanaTypeEnum.MAIN) {
@@ -59,7 +51,7 @@ class GameModeSylAndGroupFactory {
         } else if (kanaType === GameKanaTypeEnum.YOUON) {
           return [...hiraganaYouonKanaData, ...katakanaYouonKanaData];
         } else {
-          return [...allHiragana, ...allKatakana];
+          return allKanasData;
         }
       default:
         return [];
@@ -103,7 +95,8 @@ export class GameRepository implements GameRepositoryInterface {
   constructor(
     mode: GameModeEnum,
     type: GameTypeEnum,
-    kanaType: GameKanaTypeEnum
+    kanaType: GameKanaTypeEnum,
+    isTest: boolean = false
   ) {
     const raw = GameModeSylAndGroupFactory.create(type, kanaType);
     const timer = new TimerRepository();
@@ -115,7 +108,7 @@ export class GameRepository implements GameRepositoryInterface {
       type,
       kanaType,
     };
-    this.quiz = this.shuffle(raw);
+    this.quiz = isTest ? raw : this.shuffle(raw);
     this.current = 0;
     this.errors = 0;
     this.valids = 0;

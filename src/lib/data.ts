@@ -229,3 +229,15 @@ export const katakanaYouonKanaData: { kana: string; romaji: string }[] = [
   { kana: "リュ", romaji: "ryu" },
   { kana: "リョ", romaji: "ryo" },
 ];
+
+export const allHiraganaData = [
+  ...hiraganaMainKanaData,
+  ...hiraganaDakutenKanaData,
+  ...hiraganaYouonKanaData,
+];
+export const allKatakanaData = [
+  ...katakanaMainKanaData,
+  ...katakanaDakutenKanaData,
+  ...katakanaYouonKanaData,
+];
+export const allKanasData = [...allHiraganaData, ...allKatakanaData];
