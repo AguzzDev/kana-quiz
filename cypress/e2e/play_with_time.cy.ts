@@ -14,7 +14,7 @@ describe("play with time mode", () => {
     cy.playWithTimeMode();
   });
 
-  it("100% quiz", () => {
+  it("perfect", () => {
     data.forEach((d) => {
       cy.focused().type(`${d.romaji}{enter}`);
     });
@@ -25,12 +25,12 @@ describe("play with time mode", () => {
     cy.get("[data-id='errors']").should("contain", "0");
   });
 
-  it("wait 30s on the 5th try and the game ends", () => {
+  it("wait 10s on the 5th try and the game ends", () => {
     let i = 0;
 
     const attempt = () => {
       if (i === 5) {
-        cy.wait(30000);
+        cy.wait(10000);
       }
 
       cy.get("body").then(($body) => {
@@ -50,6 +50,6 @@ describe("play with time mode", () => {
 
     attempt();
     cy.get("[data-id='overall-correct']").should("contain", "5/72 (6.94%)");
-    cy.get("[data-id='time']").should("contain", "00:30");
+    cy.get("[data-id='time']").should("contain", "00:10");
   });
 });

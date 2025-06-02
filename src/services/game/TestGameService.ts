@@ -6,12 +6,14 @@ export class TestGameModeFactory {
     mode: GameModeEnum,
     type: GameTypeEnum,
     kanaType: GameKanaTypeEnum
-  ): TestGameRepository {
+  ): GameRepository {
     switch (mode) {
       case GameModeEnum.NO_ERRORS:
-        return new TestNoErrorsModeRepository(mode, type, kanaType);
+        return new NoErrorsModeRepository(mode, type, kanaType);
       case GameModeEnum.TIMED:
-        return new TestTimedModeRepository(mode, type, kanaType);
+        return new TimedModeRepository(mode, type, kanaType);
+      case GameModeEnum.NO_ERRORS_AND_TIMED:
+        return new NoErrorsWithTimedModeRepository(mode, type, kanaType);
       default:
         return new TestGameRepository(mode, type, kanaType);
     }
@@ -28,7 +30,7 @@ export class TestGameRepository extends GameRepository {
   }
 }
 
-class TestNoErrorsModeRepository extends TestGameRepository {
+class NoErrorsModeRepository extends TestGameRepository {
   override checkAnswer(input: string): boolean {
     const correct = super.checkAnswer(input);
     if (!correct) {
@@ -38,7 +40,7 @@ class TestNoErrorsModeRepository extends TestGameRepository {
   }
 }
 
-class TestTimedModeRepository extends TestGameRepository {
+class TimedModeRepository extends TestGameRepository {
   private timerId?: number;
 
   constructor(
@@ -50,7 +52,40 @@ class TestTimedModeRepository extends TestGameRepository {
 
     this.timerId = window.setTimeout(() => {
       this.endGame();
-    }, 30000);
+    }, 10000);
+  }
+
+  override endGame() {
+    super.endGame();
+
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = undefined;
+    }
+  }
+}
+
+class NoErrorsWithTimedModeRepository extends TestGameRepository {
+  private timerId?: number;
+
+  constructor(
+    mode: GameModeEnum,
+    type: GameTypeEnum,
+    kanaType: GameKanaTypeEnum
+  ) {
+    super(mode, type, kanaType);
+
+    this.timerId = window.setTimeout(() => {
+      this.endGame();
+    }, 10000);
+  }
+
+  override checkAnswer(input: string): boolean {
+    const correct = super.checkAnswer(input);
+    if (!correct) {
+      this.endGame();
+    }
+    return correct;
   }
 
   override endGame() {

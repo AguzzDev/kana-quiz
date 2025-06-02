@@ -48,31 +48,41 @@ export const Default = () => {
 
   return (
     <>
-      <div data-id="default-view" className="flex flex-1 flex-col justify-center space-y-3 sm:space-y-5">
-        <h3>Game Modes</h3>
-        <div className="grid grid-cols-3 gap-x-2 sm:gap-x-5">
+      <div
+        data-id="default-view"
+        className="flex flex-1 flex-col justify-center space-y-3"
+      >
+        <h4>Game Modes</h4>
+        <div className="grid grid-cols-3 gap-x-2 sm:gap-x-5 space-y-3">
           <Button
             mode={GameFiltersEnum.MODE}
-            title="Classic"
+            title={GameModeEnum.CLASSIC}
             value={GameModeEnum.CLASSIC}
             data-id="button-mode-1"
           />
           <Button
             mode={GameFiltersEnum.MODE}
-            title="No errors"
+            title={GameModeEnum.NO_ERRORS}
             value={GameModeEnum.NO_ERRORS}
             data-id="button-mode-2"
           />
           <Button
             mode={GameFiltersEnum.MODE}
-            title="With time (5min)"
+            title={GameModeEnum.TIMED}
             value={GameModeEnum.TIMED}
             data-id="button-mode-3"
           />
+          <Button
+            className="col-span-3"
+            mode={GameFiltersEnum.MODE}
+            title={GameModeEnum.NO_ERRORS_AND_TIMED}
+            value={GameModeEnum.NO_ERRORS_AND_TIMED}
+            data-id="button-mode-4"
+          />
         </div>
 
-        <h3>Which syllabary do you want to practice?</h3>
-        <div className="flex-col space-y-3 sm:space-y-5 sm:grid grid-cols-2 gap-x-10 text-center">
+        <h4>Which syllabary do you want to practice?</h4>
+        <div className="flex-col space-y-3 sm:grid grid-cols-2 gap-x-10 text-center">
           <Button
             mode={GameFiltersEnum.TYPE}
             title="Practice Hiragana"
@@ -96,8 +106,8 @@ export const Default = () => {
           </div>
         </div>
 
-        <h3>Which group do you want to practice?</h3>
-        <div className="flex-col space-y-3 sm:space-y-5 sm:grid grid-cols-3 gap-x-10 text-center">
+        <h4>Which group do you want to practice?</h4>
+        <div className="flex-col space-y-3 sm:grid grid-cols-3 gap-x-10 text-center">
           <Button
             mode={GameFiltersEnum.KANATYPE}
             title="All Main Kana"
