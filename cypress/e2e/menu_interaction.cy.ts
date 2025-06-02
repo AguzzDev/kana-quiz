@@ -17,4 +17,8 @@ describe("menu interaction", () => {
   it("3", () => {
     cy.playWithTimeMode();
   });
+
+   it("4", () => {
+    cy.playNoErrorsWithTimeMode();
+  });
 });

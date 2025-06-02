@@ -27,12 +27,23 @@ Cypress.Commands.add("playNoErrorsMode", () => {
 });
 
 Cypress.Commands.add("playWithTimeMode", () => {
-cy.get("[data-id='button-mode-3']").click();
-    cy.get("[data-id='button-type-3']").click();
-    cy.get("[data-id='button-kanaType-3']").click();
-    cy.get("[data-id='button-start']").click();
-    cy.get("[data-id='game-mode']").should(
-      "contain",
-      "With time (5min) & All syllabaries & Combinations"
-    );
+  cy.get("[data-id='button-mode-3']").click();
+  cy.get("[data-id='button-type-3']").click();
+  cy.get("[data-id='button-kanaType-3']").click();
+  cy.get("[data-id='button-start']").click();
+  cy.get("[data-id='game-mode']").should(
+    "contain",
+    "With time (5min) & All syllabaries & Combinations"
+  );
+});
+
+Cypress.Commands.add("playNoErrorsWithTimeMode", () => {
+  cy.get("[data-id='button-mode-4']").click();
+  cy.get("[data-id='button-type-1']").click();
+  cy.get("[data-id='button-kanaType-1']").click();
+  cy.get("[data-id='button-start']").click();
+  cy.get("[data-id='game-mode']").should(
+    "contain",
+    "No errors with time (5min) & Hiragana & Main"
+  );
 });

@@ -6,7 +6,7 @@ import { Dispatch, SetStateAction } from "react";
 declare global {
   interface Window {
     CYPRESS_TEST?: boolean;
-    game: GameRepository
+    game: GameRepository;
   }
 }
 
@@ -78,6 +78,7 @@ export enum GameModeEnum {
   CLASSIC = "Classic",
   NO_ERRORS = "No errors",
   TIMED = "With time (5min)",
+  NO_ERRORS_AND_TIMED = "No errors with time (5min)",
 }
 export enum GameTypeEnum {
   ALL = "All syllabaries",

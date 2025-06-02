@@ -5,6 +5,7 @@ declare global {
       playClassicMode(): Chainable<void>;
       playNoErrorsMode(): Chainable<void>;
       playWithTimeMode(): Chainable<void>;
+      playNoErrorsWithTimeMode(): Chainable<void>;
       visitHome(): Chainable<void>;
     }
   }

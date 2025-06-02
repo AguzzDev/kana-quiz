@@ -70,6 +70,8 @@ export class GameModeFactory {
         return new NoErrorsModeRepository(mode, type, kanaType);
       case GameModeEnum.TIMED:
         return new TimedModeRepository(mode, type, kanaType);
+      case GameModeEnum.NO_ERRORS_AND_TIMED:
+        return new NoErrorsWithTimedModeRepository(mode, type, kanaType);
       default:
         return new GameRepository(mode, type, kanaType);
     }
@@ -244,6 +246,39 @@ class TimedModeRepository extends GameRepository {
     this.timerId = window.setTimeout(() => {
       this.endGame();
     }, 5 * 60 * 1000);
+  }
+
+  override endGame() {
+    super.endGame();
+
+    if (this.timerId) {
+      clearTimeout(this.timerId);
+      this.timerId = undefined;
+    }
+  }
+}
+
+class NoErrorsWithTimedModeRepository extends GameRepository {
+  private timerId?: number;
+
+  constructor(
+    mode: GameModeEnum,
+    type: GameTypeEnum,
+    kanaType: GameKanaTypeEnum
+  ) {
+    super(mode, type, kanaType);
+
+    this.timerId = window.setTimeout(() => {
+      this.endGame();
+    }, 1 * 60 * 1000);
+  }
+
+  override checkAnswer(input: string): boolean {
+    const correct = super.checkAnswer(input);
+    if (!correct) {
+      this.endGame();
+    }
+    return correct;
   }
 
   override endGame() {
