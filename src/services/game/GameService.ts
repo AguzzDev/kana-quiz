@@ -270,7 +270,7 @@ class NoErrorsWithTimedModeRepository extends GameRepository {
 
     this.timerId = window.setTimeout(() => {
       this.endGame();
-    }, 1 * 60 * 1000);
+    }, 5 * 60 * 1000);
   }
 
   override checkAnswer(input: string): boolean {

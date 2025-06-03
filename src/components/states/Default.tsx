@@ -29,7 +29,7 @@ export const Default = () => {
   };
 
   const handleClick = async () => {
-    if (!selectMode) {
+    if (!selectMode?.type && !selectMode?.kanaType) {
       return newError("Select syllabary and group");
     } else if (!selectMode?.kanaType) {
       return newError("Select a group");
@@ -138,7 +138,11 @@ export const Default = () => {
         </div>
 
         <div className="flex flex-col flex-1">
-          {err && <p className="text-sm text-red-800 pt-2">{err}</p>}
+          {err && (
+            <p data-id="error" className="text-sm text-red-800 pt-2">
+              {err}
+            </p>
+          )}
 
           <div className="flex-1 flex flex-col justify-end">
             <ButtonMenu
