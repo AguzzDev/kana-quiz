@@ -144,11 +144,16 @@ export class GameRepository implements GameRepositoryInterface {
     if (!response) {
       this.errorsList.push({ ...quiz, you: input.toLowerCase() });
     }
+
+    const alreadyPlayed = this.answers.get(this.current);
+    if (alreadyPlayed === undefined) {
+      this.updateValidsOrErrors(
+        response ? GameSumTypeEnum.VALID : GameSumTypeEnum.ERROR
+      );
+    }
+
     this.updateInputs(response);
     this.updateAnswers(response);
-    this.updateValidsOrErrors(
-      response ? GameSumTypeEnum.VALID : GameSumTypeEnum.ERROR
-    );
 
     return response;
   }
