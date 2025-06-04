@@ -7,6 +7,7 @@ import { ErrorListInterface } from "@/interfaces";
 
 export const Results = () => {
   const { game, startGame, goHome } = useGame();
+  const valids = game!.valids
 
   return (
     <>
@@ -18,8 +19,8 @@ export const Results = () => {
           {game?.options.kanaType}
         </p>
         <p data-id="overall-correct">
-          Overall Correct: {game!.valids}/{game!.quiz.length}{" "}
-          {getPercentage(game!.valids, game!.quiz.length)}
+          Overall Correct: {valids}/{game!.quiz.length}{" "}
+          {getPercentage(valids, game!.quiz.length)}
         </p>
         <p data-id="time">Time: {game!.timer.time}</p>
         <p data-id="errors">Errors: {game!.errors}</p>
